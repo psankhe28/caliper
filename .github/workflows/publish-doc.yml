@@ -72,6 +72,9 @@ jobs:
           PR_URL=$(gh pr create --base gh-pages --head $BRANCH_NAME --title "Update documentation for version $VERSION" --body "This PR updates the documentation for version $VERSION.")
           echo "::set-output name=pr_url::$PR_URL"
 
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Notify about PR
         run: echo "Pull request created ${{ steps.create_pr.outputs.pr_url }}"
         env:
