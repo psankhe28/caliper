@@ -56,7 +56,7 @@ jobs:
           git pull origin gh-pages
 
           # Copy built docs from the test branch build directory to the gh-pages branch
-          cp -r /home/runner/work/caliper/caliper/docs/build/* ./${{ github.ref }}
+          mkdir -p "./${{ github.ref }}" && cp -r /home/runner/work/caliper/caliper/docs/build/* "./${{ github.ref }}"
 
           # Commit changes
           git add .
