@@ -37,7 +37,6 @@ jobs:
       - name: Deploy docs
         run: |
           VERSION=${{ github.ref }}
-          VERSION=${VERSION#refs/tags/}
           BASE_VERSION=${VERSION#v}
           
           echo "Deploying documentation for version: $BASE_VERSION"
@@ -49,7 +48,6 @@ jobs:
         id: create_pr
         run: |
           VERSION=${{ github.ref }}
-          VERSION=${VERSION#refs/tags/}
           BASE_VERSION=${VERSION#v}
 
           echo "Documentation for version: $BASE_VERSION"
