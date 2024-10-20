@@ -42,7 +42,7 @@ jobs:
           echo "Deploying documentation for version: $VERSION"
 
           cd docs
-          mike deploy --push --update-aliases $VERSION
+          mike deploy --update-aliases $VERSION
 
       - name: Create PR for gh-pages
         id: create_pr
