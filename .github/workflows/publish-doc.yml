@@ -34,12 +34,14 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-
       - name: Deploy docs
         run: |
+          # Extract the tag name (e.g., 'v4.2')
           VERSION=${{ github.ref }}
           VERSION=${VERSION#refs/tags/}
-          echo "Deploying documentation for version: $VERSION"
+          BASE_VERSION=${VERSION#v}
+          
+          echo "Deploying documentation for version: $BASE_VERSION"
 
           cd docs
           mike deploy --update-aliases $VERSION
@@ -58,12 +60,12 @@ jobs:
           mkdir -p "./${{ github.ref }}" && cp -r /home/runner/work/caliper/caliper/docs/build/* "./${{ github.ref }}"
 
           git add .
-          git commit -m "Update documentation for version $VERSION"
+          git commit -m "Update documentation for version $BASE_VERSION"
 
           git push origin $BRANCH_NAME --force  # Use force to avoid non-fast-forward issues
 
           echo "Creating pull request..."
-          PR_URL=$(gh pr create --base gh-pages --head $BRANCH_NAME --title "Update documentation for version $VERSION" --body "This PR updates the documentation for version $VERSION.")
+          PR_URL=$(gh pr create --base gh-pages --head $BRANCH_NAME --title "Update documentation for version $VERSION" --body "This PR updates the documentation for version $BASE_VERSION.")
           echo "::set-output name=pr_url::$PR_URL"
 
         env:
