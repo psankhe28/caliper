@@ -45,9 +45,6 @@ jobs:
 
           cd docs
           mike deploy --update-aliases $BASE_VERSION latest
-
-          # Ensure `docs/build` is removed if generated
-          rm -rf build
           
           cd ..
           git fetch origin gh-pages
