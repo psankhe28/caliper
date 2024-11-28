@@ -37,7 +37,7 @@ jobs:
           mike deploy --update-aliases $BASE_VERSION latest
           cd ..
           ls -d */
-          git checkout -b docs-$FULL_VERSION
+          git checkout -b docs-$VERSION
           git branch
           git ls-files | grep -v '^docs/build/' | xargs git rm -f
           
@@ -46,14 +46,15 @@ jobs:
           
           git commit -m "Update documentation for version $FULL_VERSION"
           git push origin docs-$FULL_VERSION
+
       - name: Create pull request for docs deployment
         uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: gh-pages
-          head: docs-${{ github.ref_name }}
-          title: "Update docs for version ${{ github.ref_name }}"
-          body: "This PR updates the documentation for version ${{ github.ref_name }}."
+          head: docs-${{ github.ref }}
+          title: "Update docs for version ${{ github.ref }}"
+          body: "This PR updates the documentation for version ${{ github.ref }}."
       - name: Notify about PR
         run: echo "Pull request created ${{ steps.create_pr.outputs.pr_url }}"
         env:
