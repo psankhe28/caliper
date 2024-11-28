@@ -36,7 +36,8 @@ jobs:
           cd docs
           mike deploy --update-aliases $BASE_VERSION latest
           ls -d */
-          git status
+          git checkout -b docs-$FULL_VERSION
+          git branch
           
           # Ensure the build directory is not ignored and is committed
           git add build/*  # Add the built docs files explicitly
