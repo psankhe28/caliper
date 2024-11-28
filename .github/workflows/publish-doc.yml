@@ -1,14 +1,11 @@
 name: ci
-
 on:
   push:
     tags:
-      - '**'
-
+      - '*'
 permissions:
   contents: write
   pull-requests: write
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,48 +13,43 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
       - uses: actions/setup-python@v4
         with:
           python-version: 3.x
-
       - uses: actions/cache@v2
         with:
           key: ${{ github.ref }}
           path: .cache
-
       - name: Install Python dependencies
         run: pip install -r ./docs/pip-requirements.txt
-
       - name: Configure git user
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-
       - name: Deploy docs to a temporary branch
         run: |
           VERSION=${{ github.ref }}
           VERSION=${VERSION#refs/tags/}
           BASE_VERSION=${VERSION#v}
           FULL_VERSION="v$BASE_VERSION"
-
           echo "Deploying documentation for version: $FULL_VERSION"
-
           cd docs
           mike deploy --update-aliases $BASE_VERSION latest
           
           cd ..
-          git fetch origin gh-pages
-          git checkout -b gh-pages-update gh-pages
-          git add .
+          git checkout -b docs-$FULL_VERSION
+          git add docs
           git commit -m "Update documentation for version $FULL_VERSION"
-          git push origin gh-pages-update
-
-      - name: Create a Pull Request to gh-pages
-        uses: peter-evans/create-pull-request@v5
+          git push origin docs-$FULL_VERSION
+      - name: Create pull request for docs deployment
+        uses: peter-evans/create-pull-request@v4
         with:
-          branch: gh-pages-update
+          token: ${{ secrets.GITHUB_TOKEN }}
           base: gh-pages
-          title: "Update documentation for version ${{ github.ref }}"
-          body: |
-            This PR updates the documentation for version ${{ github.ref }}.
+          head: docs-${{ github.ref_name }}
+          title: "Update docs for version ${{ github.ref_name }}"
+          body: "This PR updates the documentation for version ${{ github.ref_name }}."
+      - name: Notify about PR
+        run: echo "Pull request created ${{ steps.create_pr.outputs.pr_url }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
