@@ -22,7 +22,12 @@ jobs:
           python-version: 3.x
 
       - name: Install Python dependencies
-        run: pip install -r ./docs/pip-requirements.txt
+        run: |
+          if [ -f ./docs/pip-requirements.txt ]; then
+            pip install -r ./docs/pip-requirements.txt
+          else
+            echo "No requirements file found. Skipping dependency installation."
+          fi
 
       - name: Configure git user
         run: |
@@ -38,16 +43,21 @@ jobs:
 
           echo "Deploying documentation for version: $FULL_VERSION"
 
-          # Create deployment changes
+          # Fetch the latest gh-pages branch and create a new branch for the PR
           git fetch origin gh-pages
           git checkout -b update-gh-pages origin/gh-pages
           rm -rf *
-          
-          # Deploy using mike
-          cd docs
-          mike deploy --update-aliases $BASE_VERSION latest
-          mike set-default $BASE_VERSION
-          cd ..
+
+          # Deploy using mike if docs directory exists
+          if [ -d docs ]; then
+            cd docs
+            mike deploy --update-aliases $BASE_VERSION latest
+            mike set-default $BASE_VERSION
+            cd ..
+          else
+            echo "Docs directory not found. Skipping mike deployment."
+            exit 1
+          fi
 
           # Commit changes
           git add .
