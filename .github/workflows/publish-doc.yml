@@ -35,13 +35,14 @@ jobs:
           echo "Deploying documentation for version: $FULL_VERSION"
           cd docs
           mike deploy --update-aliases $BASE_VERSION latest
+          cd ..
           ls -d */
           git checkout -b docs-$FULL_VERSION
           git branch
           git ls-files | grep -v '^docs/build/' | xargs git rm -f
           
 
-          git add -f build/*
+          git add -f docs/build/*
           
           git commit -m "Update documentation for version $FULL_VERSION"
           git push origin docs-$FULL_VERSION
