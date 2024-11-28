@@ -39,8 +39,7 @@ jobs:
           git checkout -b docs-$FULL_VERSION
           git branch
           
-          # Ensure the build directory is not ignored and is committed
-          git add build/*  # Add the built docs files explicitly
+          git add -f docs/build/*
           git commit -m "Update documentation for version $FULL_VERSION"
           git push origin docs-$FULL_VERSION
       - name: Create pull request for docs deployment
