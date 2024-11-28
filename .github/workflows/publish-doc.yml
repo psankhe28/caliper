@@ -39,7 +39,7 @@ jobs:
           git checkout -b docs-$FULL_VERSION
           git branch
           
-          git add -f docs/build/*
+          git add -f build/*
           git commit -m "Update documentation for version $FULL_VERSION"
           git push origin docs-$FULL_VERSION
       - name: Create pull request for docs deployment
