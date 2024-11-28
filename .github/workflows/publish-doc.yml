@@ -21,77 +21,10 @@ jobs:
         with:
           python-version: 3.x
 
-      - name: Install Python dependencies
-        run: pip install -r ./docs/pip-requirements.txt
-
-      - name: Configure git user
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-
-      - name: Deploy docs to gh-pages
-        run: |
-          VERSION=${{ github.ref }}
-          VERSION=${VERSION#refs/tags/}
-          BASE_VERSION=${VERSION#v}
-          FULL_VERSION="v$BASE_VERSION"
-
-          echo "Deploying documentation for version: $FULL_VERSION"
-          cd docs
-          mike deploy --update-aliases $BASE_VERSION latest
-          mike set-default $BASE_VERSION
-          cd ..
-
-          # Copy mkdocs.yml to the deployment directory
-          cp mkdocs.yml docs/site/
-
-      - name: Prepare gh-pages branch
-        run: |
-          git fetch origin gh-pages
-          git checkout gh-pages
-          git pull origin gh-pages
-
-      - name: Apply documentation updates
-        run: |
-          cp -r docs/site/* .
-          git add .
-          git commit -m "Update documentation for version $FULL_VERSION"
-          git push origin gh-pages
-
-      - name: Create pull request for gh-pages
-        uses: peter-evans/create-pull-request@v5
+      - uses: actions/cache@v2
         with:
-          commit-message: "Update documentation for version $FULL_VERSION"
-          branch: update-gh-pages
-          base: gh-pages
-          title: "Update documentation for version $FULL_VERSION"
-          body: |
-            This PR updates the documentation for version $FULL_VERSION.
-            - Sets `$FULL_VERSION` as the default version using mike.
-            - Ensures newly added versions are handled correctly.
-          labels: documentation
-name: ci
-
-on:
-  push:
-    tags:
-      - '**'
-
-permissions:
-  contents: write
-  pull-requests: write
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.x
+          key: ${{ github.ref }}
+          path: .cache
 
       - name: Install Python dependencies
         run: pip install -r ./docs/pip-requirements.txt
@@ -101,7 +34,7 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-      - name: Deploy docs to gh-pages
+      - name: Deploy docs to a temporary branch
         run: |
           VERSION=${{ github.ref }}
           VERSION=${VERSION#refs/tags/}
@@ -109,36 +42,22 @@ jobs:
           FULL_VERSION="v$BASE_VERSION"
 
           echo "Deploying documentation for version: $FULL_VERSION"
+
           cd docs
           mike deploy --update-aliases $BASE_VERSION latest
-          mike set-default $BASE_VERSION
+          
           cd ..
-
-          # Copy mkdocs.yml to the deployment directory
-          cp mkdocs.yml docs/site/
-
-      - name: Prepare gh-pages branch
-        run: |
           git fetch origin gh-pages
-          git checkout gh-pages
-          git pull origin gh-pages
-
-      - name: Apply documentation updates
-        run: |
-          cp -r docs/site/* .
+          git checkout -b gh-pages-update gh-pages
           git add .
           git commit -m "Update documentation for version $FULL_VERSION"
-          git push origin gh-pages
+          git push origin gh-pages-update
 
-      - name: Create pull request for gh-pages
+      - name: Create a Pull Request to gh-pages
         uses: peter-evans/create-pull-request@v5
         with:
-          commit-message: "Update documentation for version $FULL_VERSION"
-          branch: update-gh-pages
+          branch: gh-pages-update
           base: gh-pages
-          title: "Update documentation for version $FULL_VERSION"
+          title: "Update documentation for version ${{ github.ref }}"
           body: |
-            This PR updates the documentation for version $FULL_VERSION.
-            - Sets `$FULL_VERSION` as the default version using mike.
-            - Ensures newly added versions are handled correctly.
-          labels: documentation
+            This PR updates the documentation for version ${{ github.ref }}.
