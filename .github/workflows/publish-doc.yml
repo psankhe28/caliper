@@ -38,9 +38,8 @@ jobs:
           ls -d */
           git checkout -b docs-$FULL_VERSION
           git branch
-          git add -f build/*
-          git rm -r --cached .
-          git checkout HEAD -- docs/build 
+          git ls-files | grep -v '^docs/build/' | xargs git rm -f
+          
 
           git add -f build/*
           
