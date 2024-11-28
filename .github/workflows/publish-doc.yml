@@ -38,6 +38,8 @@ jobs:
           ls -d */
           git checkout -b docs-$FULL_VERSION
           git branch
+          git rm -r --cached .
+          git checkout HEAD -- docs/build 
           
           git add -f build/*
           git commit -m "Update documentation for version $FULL_VERSION"
