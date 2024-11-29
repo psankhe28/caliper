@@ -32,10 +32,16 @@ jobs:
           VERSION=${VERSION#refs/tags/}
           BASE_VERSION=${VERSION#v}
           FULL_VERSION="v$BASE_VERSION"
+          
           echo "Deploying documentation for version: $FULL_VERSION"
+
+          git fetch origin main
+          git checkout -b docs-$VERSION origin/main
+
           cd docs
           mike deploy --update-aliases $BASE_VERSION latest
           cd ..
+          
           ls -d */
           git checkout -b docs-$VERSION
           git branch
