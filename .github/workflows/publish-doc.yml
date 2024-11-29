@@ -55,6 +55,8 @@ jobs:
             --title "Update docs for version docs-${{ steps.deploy-docs.outputs.version }}" \
             --body "This PR updates the documentation for version docs-${{ steps.deploy-docs.outputs.version }}."
           echo "Pull request created successfully!"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Notify about PR
         run: echo "Pull request created ${{ steps.create_pr.outputs.pr_url }}"
