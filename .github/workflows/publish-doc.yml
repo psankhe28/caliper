@@ -37,6 +37,9 @@ jobs:
 
           git checkout -b docs-$VERSION origin/main
           find . -mindepth 1 -maxdepth 1 -type d ! -name 'docs' ! -name '.git' -exec rm -rf {} +
+          git add -A
+          git commit -m "Clean up repo, keeping only docs and .git"
+          git push origin docs-$VERSION
 
           cd docs
           mike deploy --update-aliases $BASE_VERSION latest
