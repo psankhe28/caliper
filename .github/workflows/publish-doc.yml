@@ -37,7 +37,7 @@ jobs:
 
           git fetch origin main
           git checkout -b docs-$VERSION origin/main
-          find . -mindepth 1 -maxdepth 1 -type d ! -name 'docs' -exec rm -rf {} +
+          find . -mindepth 1 -maxdepth 1 -type d ! -name 'docs' ! -name '.git' -exec rm -rf {} +
 
           cd docs
           mike deploy --update-aliases $BASE_VERSION latest
