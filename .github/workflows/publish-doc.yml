@@ -45,14 +45,18 @@ jobs:
           
           git commit -m "Update documentation for version $FULL_VERSION"
           git push origin docs-$FULL_VERSION
+          echo "::set-output name=version::$VERSION"
+
+
       - name: Create pull request for docs deployment
         uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: gh-pages
-          head: docs-${{ github.ref }}
-          title: "Update docs for version ${{ github.ref }}"
-          body: "This PR updates the documentation for version ${{ github.ref }}."
+          head: docs-${{ steps.deploy-docs.outputs.version }}
+          title: "Update docs for version ${{ steps.deploy-docs.outputs.version }}"
+          body: "This PR updates the documentation for version ${{ steps.deploy-docs.outputs.version }}."
+
       - name: Notify about PR
         run: echo "Pull request created ${{ steps.create_pr.outputs.pr_url }}"
         env:
