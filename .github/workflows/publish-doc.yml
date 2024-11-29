@@ -45,17 +45,10 @@ jobs:
           
           git commit -m "Update documentation for version $FULL_VERSION"
           git push origin docs-$FULL_VERSION
-          echo "::set-output name=version::$VERSION"
-          echo ${{ steps.deploy-docs.outputs.version }}
+          echo "version=$VERSION" >> $GITHUB_ENV
 
-      - name: Create pull request
-        run: |
-          gh pr create \
-            --base gh-pages \
-            --head docs-${{ steps.deploy-docs.outputs.version }}
-            --title "Update docs for version docs-${{ steps.deploy-docs.outputs.version }}" \
-            --body "This PR updates the documentation for version docs-${{ steps.deploy-docs.outputs.version }}."
-          echo "Pull request created successfully!"
+      - name: create pull request
+        run: gh pr create -B docs-${{ env.version }} -H gh-pages --title 'Merge docs-${{ env.version }} into gh-pages' --body 'Created by Github action'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
