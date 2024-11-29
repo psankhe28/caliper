@@ -46,6 +46,7 @@ jobs:
           git commit -m "Update documentation for version $FULL_VERSION"
           git push origin docs-$FULL_VERSION
           echo "::set-output name=version::$VERSION"
+          echo ${{ steps.deploy-docs.outputs.version }}
 
       - name: Create pull request
         run: |
