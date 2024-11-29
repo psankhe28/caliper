@@ -43,6 +43,7 @@ jobs:
           cd ..
 
           git branch
+          find . -mindepth 1 -maxdepth 1 -type f ! -path './docs/build/*' -exec rm -f {} +
           find . -mindepth 1 -maxdepth 1 -type d ! -name 'docs' ! -name '.git' -exec rm -rf {} +
           
           git add -f docs/build/*
