@@ -41,9 +41,8 @@ jobs:
           cd docs
           mike deploy --update-aliases $BASE_VERSION latest
           cd ..
-          
+
           ls -d */
-          git checkout -b docs-$VERSION
           git branch
           git ls-files | grep -v '^docs/build/' | xargs git rm -f
           
